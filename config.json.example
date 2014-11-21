@@ -1,0 +1,14 @@
+{
+    "username": "<username>",
+    "auth_url": "https://<url>",
+    "iterations": 500,
+    "timeout": 120,
+    "network_id": "<network UUID to test with>",
+    "tenant_name": "<tenant ID>",
+    "insecure": true,
+    "password": "<tenant password>",
+    "workers": 50,
+    "auth_strategy": "rackspace",
+    "auth_retries": 10,
+    "teardown_retries": 10
+}
