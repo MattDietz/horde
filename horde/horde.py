@@ -1,6 +1,7 @@
 import json
 import multiprocessing
 import time
+import traceback
 
 from neutronclient.v2_0 import client as clientv20
 
@@ -85,16 +86,32 @@ def get_client():
 
 def harness(test_method):
     start_time = time.time()
-    res = test_method()
-    end_time = time.time() - start_time
-    return (res[0], res[1], end_time)
+    success, resource = test_method()
+    run_time = time.time() - start_time
+    return (success, resource, run_time)
 
 
-def run_tests(runner):
+def run_tests(runner, process_results, teardown):
+    # Teardown is a test teardown, not the overall teardown
     pool = multiprocessing.Pool(processes=CONF["workers"])
 
-    tests = [pool.apply_async(runner)
+    start_time = time.time()
+    tests = [pool.apply_async(harness, (runner,))
              for iteration in xrange(CONF["iterations"])]
     results = [test.get() for test in tests]
 
-    #process_results(results)
+    process_results(start_time, results)
+
+    teardown_results = [pool.apply_async(teardown, (r,))
+                        for s, r, t in results if r]
+
+    print "Issued all teardowns, waiting for final cleanup..."
+    # TODO Display the failures to teardown
+    for res in teardown_results:
+        try:
+            val = res.get()
+            if val:
+                print val
+        except Exception as e:
+            print e
+        res.wait()
