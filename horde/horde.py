@@ -3,6 +3,8 @@ import multiprocessing
 import time
 import traceback
 
+import eventlet
+
 from neutronclient.v2_0 import client as clientv20
 
 # Possible Flow:
@@ -31,6 +33,24 @@ from neutronclient.v2_0 import client as clientv20
 # * ConfigMutation: Changes a neutron.conf variable in a range
 # * PackageMutation: Changes a package version in a fixed range, or with a DSL
 #   0.1 <-> 0.2 OR $NOW <-> $LATEST (should use distribute semantics
+
+# Why this exists:
+# I *could* using my fusion repo, incorporate multiprocessing and eventlet
+# together and get the concurrency I want. However, unit testing is about
+# vetting some piece of functionality one time, in isolation (i.e. a unit)
+# and then returning success or failure. I want this framework to be more
+# flexible, allowing one to test individual pieces of functionality en-masse,
+# multiple times (say, to vet N nodes behind a load balancer) or to prove
+# the performance of a given piece of software.
+#
+# Another thing I want is the ability to analyze the results in aggregate,
+# and emit statistics about the run, like the mean, median and standard
+# deviation
+#
+# Finally, I would say the design goal of Horde is to provide an easy,
+# transparent means for rapid endpoint verification as well as rapidly apply
+# changes to any endpoint that supports non-blocking I/O, similiar to how
+# Ansible concurrently modifies hosts.
 
 CONF = {
     "auth_url": "http://127.0.0.1:5000/v2.0",
