@@ -126,4 +126,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         path = sys.argv[1]
     horde.load_conf(path)
-    run_tests()
+    horde.run_tests(runner='', process_results='', teardown='')
