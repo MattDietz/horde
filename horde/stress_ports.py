@@ -56,7 +56,7 @@ def teardown(port):
         #   auth_retries += 1
         except Exception as e:
             teardown_retries += 1
-            if teardown_retries == horde.ONF["teardown_retries"]:
+            if teardown_retries == horde.CONF["teardown_retries"]:
                 print e
                 break
 
@@ -125,5 +125,5 @@ if __name__ == "__main__":
     path = None
     if len(sys.argv) > 1:
         path = sys.argv[1]
-    load_conf(path)
+    horde.load_conf(path)
     run_tests()
