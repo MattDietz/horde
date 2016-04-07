@@ -1,2 +1,4 @@
 *.pyc
 *.json
+.tox
+*.egg-info/
